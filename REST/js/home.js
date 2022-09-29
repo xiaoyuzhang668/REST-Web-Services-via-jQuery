@@ -10,7 +10,6 @@ $(document).ready(function () {
         function () {
             $(this).css("background-color", "WhiteSmoke");
             $(this).css("cursor", "pointer");
-
         },
         // out callback
         function () {
@@ -19,6 +18,7 @@ $(document).ready(function () {
     );
 });
 
+var message = document.getElementById("errorMessages");
 
 function loadDvds() {
     clearTable();
@@ -60,6 +60,7 @@ function loadDvds() {
 
 function addButton() {
     $('#addButton').click(function (event) {
+        $('#errorMessages').hide();
         $('#dvdTable').hide();
         $('#addFormDiv').show();
     })
@@ -68,42 +69,44 @@ function addButton() {
 function saveButton() {
 
     $('#saveButton').click(function (event) {
-        $.ajax({
-            type: 'POST',
-            url: 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvd',
-            data: JSON.stringify({
-                title: $('#addTitle').val(),
-                releaseYear: $('#addReleaseYear').val(),
-                director: $('#addDirector').val(),
-                rating: $('#addRating').val(),
-                notes: $('#addNotes').val()
-            }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            'dataType': 'json',
-            success: function () {
-                $('#errorMessages').empty(),
-                    $('#addTitle').val(''),
-                    $('#addReleaseYear').val(''),
-                    $('#addDirector').val(''),
-                    $('#addRating').val(''),
-                    $('#addNotes').val(''),
+        if ($('form#addForm').valid()) {
+            $.ajax({
+                type: 'POST',
+                url: 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvd',
+                data: JSON.stringify({
+                    title: $('#addTitle').val(),
+                    releaseYear: $('#addReleaseYear').val(),
+                    director: $('#addDirector').val(),
+                    rating: $('#addRating').val(),
+                    notes: $('#addNotes').val()
+                }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                'dataType': 'json',
+                success: function () {
+                    $('#errorMessages').empty(),
+                        $('#addTitle').val(''),
+                        $('#addReleaseYear').val(''),
+                        $('#addDirector').val(''),
+                        $('#addRating').val(''),
+                        $('#addNotes').val(''),
 
-                    $('#addFormDiv').hide();
-                $('#dvdTable').show();
-                loadDvds();
-            },
-            error: function () {
-                $('#errorMessages')
-                    .append($('<li>')
-                        .attr({
-                            class: 'list-group-item list-group-item-danger'
-                        })
-                        .text('Error calling web service. Please try again later.'));
-            }
-        })
+                        $('#addFormDiv').hide();
+                    $('#dvdTable').show();
+                    loadDvds();
+                },
+                error: function () {
+                    $('#errorMessages')
+                        .append($('<li>')
+                            .attr({
+                                class: 'list-group-item list-group-item-danger'
+                            })
+                            .text('Error calling web service. Please try again later.'));
+                }
+            })
+        }
     });
 }
 
@@ -180,8 +183,6 @@ function displayForm(dvdId) {
                     .text('Error calling web service. Please try again later.'));
         }
     })
-
-
 }
 
 function updateButton(dvdId) {
@@ -283,21 +284,13 @@ function goBack() {
     window.location.reload();
 }
 
-//function searchRecord() {
-//    $('#updateButton').click(function (event) {
-//        if ($('#searchCategory').val() == '' || $('#searchTerm').val() == '') {
-//            $('#errorMessages').val("Both Search Category and Search Term are required.");
-//        }
-//
-//    })
-//}
-
-// Example starter JavaScript for disabling form submissions if there are invalid fields
+// for disabling form submissions
+// if there are invalid fields
 (function () {
     'use strict'
 
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.querySelectorAll('.requires-validation')
+    var forms = document.querySelectorAll('.needs-validation')
 
     // Loop over them and prevent submission
     Array.prototype.slice.call(forms)
@@ -313,13 +306,75 @@ function goBack() {
         })
 })()
 
-var message = document.getElementById("errorMessages");
 
+//check not null search category and search term
 $('#searchRecord').click(function (event) {
     let searchCategory = document.getElementById("searchSelect");
     let searchTerm = document.getElementById("searchTerm");
 
     if ((searchTerm.value == null) || (searchTerm.value == '') || (searchCategory.value == null) || (searchCategory.value == '')) {
         message.innerHTML = "<li class='list-group-item list-group-item-danger'>Both Search Category and Search Term are required.</li>";
+        event.preventDefault();
+        event.stopPropagation();
     }
 })
+
+//check title required field and year number field
+$('#saveButton').click(function (event) {
+    let title = document.getElementById("addTitle");
+
+    if ((title.value == null) || (title.value == '')) {
+        message.innerHTML = "<li class='list-group-item list-group-item-danger'>Please enter a title for the Dvd.</li>";
+
+    }
+})
+
+
+//validate form
+jQuery(document).ready(function ($) {
+    $.validator.addMethod("numberonly", function (value, element) {
+        return this.optional(element) || /^[0-9]+$/i.test(value);
+    }, "Please enter a 4-digit year.");
+    $('form#addForm').validate({
+        errorClass: "error fail-alert",
+        validClass: "valid success-alert",
+        rules: {
+            addTitle: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            addReleaseYear: {
+                required: true,
+                numberonly: true,
+                minlength: 4,
+                maxLength: 4,
+            }
+        },
+        messages: {
+            addTitle: {
+                required: "Please enter a title for the Dvd."
+            },
+            addRelease: {
+                required: "Please enter a 4-digit year.",
+                numberOnly: "Please enter a 4-digit year.",
+                minlength: "Please enter a 4-digit year.",
+                maxlength: "Please enter a 4-digit year."
+            },
+        },
+        errorElement: "li",
+        errorPlacement: function (error, element) {
+            var placement = $(element).data('error');
+            //Custom position: first name
+            if (element.attr("name") == "addReleaseYear") {
+                $("#newserror").html(error);
+                //					console.log($(error).html());
+            } else if (element.attr("name") == "addTitle") {
+                $("#errorMessages").html(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+    })
+});
