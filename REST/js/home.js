@@ -1,23 +1,8 @@
 $(document).ready(function () {
     loadDvds();
-
-    cancelEdit();
-
-    $('.dvdRecord').hover(
-        // in callback
-        function () {
-            $(this).css("background-color", "WhiteSmoke");
-            $(this).css("cursor", "pointer");
-        },
-        // out callback
-        function () {
-            $(this).css("background-color", "");
-        }
-    );
 });
 
-var message = document.getElementById("errorMessages");
-
+//load all record
 function loadDvds() {
     clearTable();
     var contentRows = $('#contentRows');
@@ -56,13 +41,16 @@ function loadDvds() {
     })
 }
 
+//show add dvd form 
 function addButton() {
     $('#errorMessages').text('');
     $('#dvdTable').hide();
     $('#addFormDiv').show();
     $('#editFormDiv').hide();
+    $('#displayFormDiv').hide();
 }
 
+//add new record
 function saveRecord() {
     if ($('form#addForm').valid()) {
         $.ajax({
@@ -89,7 +77,8 @@ function saveRecord() {
                     $('#addNotes').val(''),
                     $('#addFormDiv').hide(),
                     $('#dvdTable').show(),
-                    loadDvds()
+                    loadDvds(),
+                    window.location.reload();
             },
             error: function () {
                 $('#errorMessages')
@@ -103,6 +92,7 @@ function saveRecord() {
     }
 }
 
+//show edit form
 function showEditForm(dvdId) {
     $('#errorMessages').empty();
 
@@ -132,6 +122,7 @@ function showEditForm(dvdId) {
     $('#editFormDiv').show();
 }
 
+//show display form
 function displayForm(dvdId) {
     $('#errorMessages').empty();
 
@@ -177,6 +168,7 @@ function displayForm(dvdId) {
     })
 }
 
+//update record
 function updateRecord() {
     if ($('form#editForm').valid()) {
         $.ajax({
@@ -216,6 +208,7 @@ function deleteDvd(dvdId) {
     $('#tempDvdId').val(dvdId);
 }
 
+//delete record
 function deleteOneDvd() {
 
     $.ajax({
@@ -238,11 +231,12 @@ function deleteOneDvd() {
     })
 }
 
-
+//clear table
 function clearTable() {
     $('#contentRows').empty();
 }
 
+//cancel edit
 function cancelEdit() {
     $('#errorMessages').empty();
 
@@ -256,6 +250,7 @@ function cancelEdit() {
     $('#editFormDiv').hide();
 }
 
+//cancel add
 function cancelAdd() {
     $('#errorMessages').empty();
 
@@ -269,13 +264,13 @@ function cancelAdd() {
     $('#addFormDiv').hide();
 }
 
+//go back
 function goBack() {
     $('#displayFormDiv').hide();
     $('#dvdTable').show();
     loadDvds();
     window.location.reload();
 }
-
 
 // if there are invalid fields
 (function () {
@@ -298,7 +293,8 @@ function goBack() {
         })
 })()
 
-
+//search
+var message = document.getElementById("errorMessages");
 //check not null search category and search term
 $('#searchRecord').click(function (event) {
     let searchCategory = document.getElementById("searchSelect");
@@ -308,6 +304,63 @@ $('#searchRecord').click(function (event) {
         message.innerHTML = "<li class='list-group-item list-group-item-danger'>Both Search Category and Search Term are required.</li>";
         event.preventDefault();
         event.stopPropagation();
+    } else {
+        let urlWeb;
+        if (searchCategory.value == "title") {
+            urlWeb = 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvds/title/';
+        } else if (searchCategory.value == "releaseYear") {
+            urlWeb = 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvds/year/';
+        } else if (searchCategory.value == "directorName") {
+            urlWeb = 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvds/directorName/';
+        } else {
+            urlWeb = 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvds/rating/';
+        }
+        alert(searchCategory.value);
+        alert(searchTerm.value);
+        alert(urlWeb + searchTerm.value);
+
+        $.ajax({
+            type: 'GET',
+            url: urlWeb + searchTerm.value,
+            success: function (data, status) {
+
+                $('#errorMessages').text('');
+                $('#contentRows').hide();
+                $('#addFormDiv').hide();
+                $('#editFormDiv').hide();
+                $('#displayFormDiv').hide();
+
+                var title = data.title;
+                var releaseYear = data.releaseYear;
+                var director = data.director;
+                var rating = data.rating;
+                var notes = data.notes;
+
+                var row = '<h2>' + title + '</h2><hr>';
+                row += '<div class="row">';
+                row += '<div class="col-md-3 mt-3">Releasae Year: </div>';
+                row += '<div class="col-md-9 mt-3">' + releaseYear + '</div>';
+                row += '<div class="col-md-3 mt-3">Director: </div>';
+                row += '<div class="col-md-9 mt-3">' + director + '</div>';
+                row += '<div class = "col-md-3 mt-3">Rating:</div>';
+                row += '<div class = "col-md-9 mt-3">' + rating + '</div>';
+                row += '<div class = "col-md-3 mt-3">Notes:</div>';
+                row += '<div class = "col-md-9 mt-3">' + notes + '</div></div>';
+                row += '<button type="button" id="backButton" class="mt-5 px-5 shadow-lg btn btn-outline-primary" onclick="goBack()">Back</button>';
+
+
+                displayFormDiv.append(row);
+
+            },
+            error: function () {
+                $('#errorMessages')
+                    .append($('<li>')
+                        .attr({
+                            class: 'list-group-item list-group-item-danger'
+                        })
+                        .text('Error calling web service. Please try again later.'));
+            }
+        })
     }
 })
 
