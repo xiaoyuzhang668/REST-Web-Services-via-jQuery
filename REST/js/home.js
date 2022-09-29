@@ -1,8 +1,6 @@
 $(document).ready(function () {
     loadDvds();
-    addButton();
-    saveButton();
-    updateButton();
+
     cancelEdit();
 
     $('.dvdRecord').hover(
@@ -59,55 +57,50 @@ function loadDvds() {
 }
 
 function addButton() {
-    $('#addButton').click(function (event) {
-        $('#errorMessages').hide();
-        $('#dvdTable').hide();
-        $('#addFormDiv').show();
-    })
+    $('#errorMessages').text('');
+    $('#dvdTable').hide();
+    $('#addFormDiv').show();
+    $('#editFormDiv').hide();
 }
 
-function saveButton() {
-
-    $('#saveButton').click(function (event) {
-        if ($('form#addForm').valid()) {
-            $.ajax({
-                type: 'POST',
-                url: 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvd',
-                data: JSON.stringify({
-                    title: $('#addTitle').val(),
-                    releaseYear: $('#addReleaseYear').val(),
-                    director: $('#addDirector').val(),
-                    rating: $('#addRating').val(),
-                    notes: $('#addNotes').val()
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                'dataType': 'json',
-                success: function () {
-                    $('#errorMessages').empty(),
-                        $('#addTitle').val(''),
-                        $('#addReleaseYear').val(''),
-                        $('#addDirector').val(''),
-                        $('#addRating').val(''),
-                        $('#addNotes').val(''),
-
-                        $('#addFormDiv').hide();
-                    $('#dvdTable').show();
-                    loadDvds();
-                },
-                error: function () {
-                    $('#errorMessages')
-                        .append($('<li>')
-                            .attr({
-                                class: 'list-group-item list-group-item-danger'
-                            })
-                            .text('Error calling web service. Please try again later.'));
-                }
-            })
-        }
-    });
+function saveRecord() {
+    if ($('form#addForm').valid()) {
+        $.ajax({
+            type: 'POST',
+            url: 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvd',
+            data: JSON.stringify({
+                title: $('#addTitle').val(),
+                releaseYear: $('#addReleaseYear').val(),
+                director: $('#addDirector').val(),
+                rating: $('#addRating').val(),
+                notes: $('#addNotes').val()
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            'dataType': 'json',
+            success: function () {
+                $('#errorMessages').empty(),
+                    $('#addTitle').val(''),
+                    $('#addReleaseYear').val(''),
+                    $('#addDirector').val(''),
+                    $('#addRating').val(''),
+                    $('#addNotes').val(''),
+                    $('#addFormDiv').hide(),
+                    $('#dvdTable').show(),
+                    loadDvds()
+            },
+            error: function () {
+                $('#errorMessages')
+                    .append($('<li>')
+                        .attr({
+                            class: 'list-group-item list-group-item-danger'
+                        })
+                        .text('Error calling web service. Please try again later.'));
+            }
+        })
+    }
 }
 
 function showEditForm(dvdId) {
@@ -124,7 +117,6 @@ function showEditForm(dvdId) {
                 $('#editNotes').val(data.notes),
                 $('#editDvdId').val(data.id),
                 $('#insertTitle').text(data.title)
-
         },
         error: function () {
             $('#errorMessages')
@@ -185,8 +177,8 @@ function displayForm(dvdId) {
     })
 }
 
-function updateButton(dvdId) {
-    $('#updateButton').click(function (event) {
+function updateRecord() {
+    if ($('form#editForm').valid()) {
         $.ajax({
             type: 'PUT',
             url: 'http://dvd-library.us-east-1.elasticbeanstalk.com/dvd/' + $('#editDvdId').val(),
@@ -216,7 +208,7 @@ function updateButton(dvdId) {
                         .text('Error calling web service.  Please try again later.'));
             }
         })
-    })
+    }
 }
 
 //when user answers yes to confirmation question inside modal, deleteModal
@@ -284,7 +276,7 @@ function goBack() {
     window.location.reload();
 }
 
-// for disabling form submissions
+
 // if there are invalid fields
 (function () {
     'use strict'
@@ -319,17 +311,6 @@ $('#searchRecord').click(function (event) {
     }
 })
 
-//check title required field and year number field
-$('#saveButton').click(function (event) {
-    let title = document.getElementById("addTitle");
-
-    if ((title.value == null) || (title.value == '')) {
-        message.innerHTML = "<li class='list-group-item list-group-item-danger'>Please enter a title for the Dvd.</li>";
-
-    }
-})
-
-
 //validate form
 jQuery(document).ready(function ($) {
     $.validator.addMethod("numberonly", function (value, element) {
@@ -349,32 +330,72 @@ jQuery(document).ready(function ($) {
                 required: true,
                 numberonly: true,
                 minlength: 4,
-                maxLength: 4,
+                maxlength: 4,
             }
         },
         messages: {
-            addTitle: {
-                required: "Please enter a title for the Dvd."
-            },
-            addRelease: {
+            addReleaseYear: {
                 required: "Please enter a 4-digit year.",
                 numberOnly: "Please enter a 4-digit year.",
                 minlength: "Please enter a 4-digit year.",
                 maxlength: "Please enter a 4-digit year."
             },
+            addTitle: {
+                required: "Please enter a title for the Dvd."
+            }
         },
-        errorElement: "li",
+        errorElement: "div",
+        errorClass: "list-group-item list-group-item-danger",
         errorPlacement: function (error, element) {
             var placement = $(element).data('error');
             //Custom position: first name
-            if (element.attr("name") == "addReleaseYear") {
-                $("#newserror").html(error);
-                //					console.log($(error).html());
-            } else if (element.attr("name") == "addTitle") {
+            if ((element.attr("name") == "addReleaseYear") || (element.attr("name") == "addTitle")) {
                 $("#errorMessages").html(error);
-            } else {
-                error.insertAfter(element);
+            }
+        }
+    })
+});
+
+jQuery(document).ready(function ($) {
+    $.validator.addMethod("numberonly", function (value, element) {
+        return this.optional(element) || /^[0-9]+$/i.test(value);
+    }, "Please enter a 4-digit year.");
+    $('form#editForm').validate({
+        errorClass: "error fail-alert",
+        validClass: "valid success-alert",
+        rules: {
+            editTitle: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            editReleaseYear: {
+                required: true,
+                numberonly: true,
+                minlength: 4,
+                maxlength: 4,
             }
         },
+        messages: {
+            editReleaseYear: {
+                required: "Please enter a 4-digit year.",
+                numberOnly: "Please enter a 4-digit year.",
+                minlength: "Please enter a 4-digit year.",
+                maxlength: "Please enter a 4-digit year."
+            },
+            editTitle: {
+                required: "Please enter a title for the Dvd."
+            }
+        },
+        errorElement: "div",
+        errorClass: "list-group-item list-group-item-danger",
+        errorPlacement: function (error, element) {
+            var placement = $(element).data('error');
+            //Custom position: first name
+            if ((element.attr("name") == "editReleaseYear") || (element.attr("name") == "editTitle")) {
+                $("#errorMessages").html(error);
+            }
+        }
     })
 });
