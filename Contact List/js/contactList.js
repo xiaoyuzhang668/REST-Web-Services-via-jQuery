@@ -1,13 +1,11 @@
 $(document).ready(function () {
-    //    alert("Ready to go.");
     loadContacts();
     addContact();
     updateContact();
-})
+});
 
 function loadContacts() {
     clearContactTable();
-
     var contentRows = $('#contentRows');
 
     $.ajax({
@@ -22,37 +20,26 @@ function loadContacts() {
                 var row = '<tr>';
                 row += '<td>' + name + '</td>';
                 row += '<td>' + company + '</td>';
-                row += '<td><button onclick="showEditForm(' + contactId + ')" type="button" class="btn btn-info">Edit</button></td>';
+                row += '<td><button type="button" class="btn btn-info" onclick="showEditForm(' + contactId + ')">Edit</button></td>';
                 row += '<td><button type="button" class="btn btn-danger" onclick="deleteContact(' + contactId + ')">Delete</button></td>';
                 row += '</tr>';
 
                 contentRows.append(row);
             })
-
         },
         error: function () {
-
             $('#errorMessages')
                 .append($('<li>')
                     .attr({
                         class: 'list-group-item list-group-item-danger'
                     })
                     .text('Error calling web service. Please try again later.'));
-
         }
-    })
-
+    });
 }
 
 function addContact() {
     $('#addButton').click(function (event) {
-
-        var haveValidationErrors = checkAndDisplayValidationErrors($('#addForm').find('input'));
-
-        if (haveValidationErrors) {
-            return false;
-        }
-
         $.ajax({
             type: 'POST',
             url: 'http://contactlist.us-east-1.elasticbeanstalk.com/contact',
@@ -93,26 +80,6 @@ function clearContactTable() {
     $('#contentRows').empty();
 }
 
-function showEditForm() {
-    $('#errorMessages').empty();
-
-    $('#contactTableDiv').hide();
-    $('#editFormDiv').show();
-}
-
-function hideEditForm() {
-    $('#errorMessages').empty();
-
-    $('#editFirstName').val('');
-    $('#editLastName').val('');
-    $('#editCompany').val('');
-    $('#editPhone').val('');
-    $('#editEmail').val('');
-
-    $('#contactTableDiv').show();
-    $('#editFormDiv').hide();
-}
-
 function showEditForm(contactId) {
     $('#errorMessages').empty();
 
@@ -140,6 +107,19 @@ function showEditForm(contactId) {
 
     $('#contactTableDiv').hide();
     $('#editFormDiv').show();
+}
+
+function hideEditForm() {
+    $('#errorMessages').empty();
+
+    $('#editFirstName').val('');
+    $('#editLastName').val('');
+    $('#editCompany').val('');
+    $('#editPhone').val('');
+    $('#editEmail').val('');
+
+    $('#contactTableDiv').show();
+    $('#editFormDiv').hide();
 }
 
 function updateContact(contactId) {
@@ -186,6 +166,7 @@ function deleteContact(contactId) {
         }
     });
 }
+
 
 function checkAndDisplayValidationErrors(input) {
     $('#errorMessages').empty();

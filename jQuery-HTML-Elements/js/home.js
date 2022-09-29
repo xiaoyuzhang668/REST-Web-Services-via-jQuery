@@ -8,7 +8,7 @@ $(document).ready(function () {
     $('#orangeHeading').css('background-color', 'orange');
     $('#oops').hide();
     $('#footerPlaceholder').hide();
-    $('#footer').append('p').text('email address');
+    $('#footer').append('p').text('Cathy Zhang xiaoyuzhang668@gmail.com');
     $('#footer p').css({
         'font-family': 'Courier',
         'font-size': '24px'

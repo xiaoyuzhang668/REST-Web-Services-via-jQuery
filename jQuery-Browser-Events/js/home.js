@@ -32,6 +32,9 @@ $(document).ready(function () {
         $('#mainInfoDiv').hide();
     });
 
+
+
+
     $('#akronWeather').hide();
     $('#louisvilleWeather').hide();
     $('#minneapolisWeather').hide();

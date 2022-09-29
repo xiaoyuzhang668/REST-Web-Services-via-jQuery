@@ -4,6 +4,7 @@ $(document).ready(function () {
         type: 'GET',
         url: 'http://contactlist.us-east-1.elasticbeanstalk.com/contacts',
         success: function (contactArray) {
+            alert("SUCCESS");
             var contactsDiv = $('#allContacts');
 
             $.each(contactArray, function (index, contact) {
