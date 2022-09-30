@@ -272,6 +272,8 @@ function goBack() {
     window.location.reload();
 }
 
+//search
+
 // if there are invalid fields
 (function () {
     'use strict'
@@ -293,12 +295,14 @@ function goBack() {
         })
 })()
 
-//search
+
 var message = document.getElementById("errorMessages");
+//search
 //check not null search category and search term
 $('#searchRecord').click(function (event) {
     let searchCategory = document.getElementById("searchSelect");
     let searchTerm = document.getElementById("searchTerm");
+    let contentRows = $('#contentRows');
 
     if ((searchTerm.value == null) || (searchTerm.value == '') || (searchCategory.value == null) || (searchCategory.value == '')) {
         message.innerHTML = "<li class='list-group-item list-group-item-danger'>Both Search Category and Search Term are required.</li>";
@@ -319,38 +323,28 @@ $('#searchRecord').click(function (event) {
         alert(searchTerm.value);
         alert(urlWeb + searchTerm.value);
 
+
         $.ajax({
             type: 'GET',
             url: urlWeb + searchTerm.value,
-            success: function (data, status) {
+            success: function (dvdArray) {
+                clearTable();
+                $.each(dvdArray, function (index, dvd) {
+                    var title = dvd.title;
+                    var releaseYear = dvd.releaseYear;
+                    var director = dvd.director;
+                    var rating = dvd.rating;
+                    var dvdId = dvd.id;
 
-                $('#errorMessages').text('');
-                $('#contentRows').hide();
-                $('#addFormDiv').hide();
-                $('#editFormDiv').hide();
-                $('#displayFormDiv').hide();
+                    var row = '<tr class="dvdRecord">';
+                    row += '<td class="border-end"><u><a style="cursor: pointer" onclick="displayForm(' + dvdId + ')">' + title + '</a></u></td>';
+                    row += '<td class="border-end">' + releaseYear + '</td>';
+                    row += '<td class="border-end">' + director + '</td>';
+                    row += '<td class="border-end">' + rating + '</td>';
+                    row += '</tr>';
 
-                var title = data.title;
-                var releaseYear = data.releaseYear;
-                var director = data.director;
-                var rating = data.rating;
-                var notes = data.notes;
-
-                var row = '<h2>' + title + '</h2><hr>';
-                row += '<div class="row">';
-                row += '<div class="col-md-3 mt-3">Releasae Year: </div>';
-                row += '<div class="col-md-9 mt-3">' + releaseYear + '</div>';
-                row += '<div class="col-md-3 mt-3">Director: </div>';
-                row += '<div class="col-md-9 mt-3">' + director + '</div>';
-                row += '<div class = "col-md-3 mt-3">Rating:</div>';
-                row += '<div class = "col-md-9 mt-3">' + rating + '</div>';
-                row += '<div class = "col-md-3 mt-3">Notes:</div>';
-                row += '<div class = "col-md-9 mt-3">' + notes + '</div></div>';
-                row += '<button type="button" id="backButton" class="mt-5 px-5 shadow-lg btn btn-outline-primary" onclick="goBack()">Back</button>';
-
-
-                displayFormDiv.append(row);
-
+                    contentRows.append(row);
+                })
             },
             error: function () {
                 $('#errorMessages')
@@ -363,6 +357,7 @@ $('#searchRecord').click(function (event) {
         })
     }
 })
+
 
 //validate form
 jQuery(document).ready(function ($) {

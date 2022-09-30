@@ -40,6 +40,13 @@ function loadContacts() {
 
 function addContact() {
     $('#addButton').click(function (event) {
+
+        var haveValidationErrors = checkAndDisplayValidationErrors($('#addForm').find('input'));
+
+        if (haveValidationErrors) {
+            return false;
+        }
+
         $.ajax({
             type: 'POST',
             url: 'http://contactlist.us-east-1.elasticbeanstalk.com/contact',
@@ -104,9 +111,9 @@ function showEditForm(contactId) {
                     .text('Error calling web service. Please try again later.'));
         }
     })
-
-    $('#contactTableDiv').hide();
     $('#editFormDiv').show();
+    $('#contactTableDiv').hide();
+
 }
 
 function hideEditForm() {
@@ -124,6 +131,13 @@ function hideEditForm() {
 
 function updateContact(contactId) {
     $('#updateButton').click(function (event) {
+
+        var haveValidationErrors = checkAndDisplayValidationErrors($('#editForm').find('input'));
+
+        if (haveValidationErrors) {
+            return false;
+        }
+
         $.ajax({
             type: 'PUT',
             url: 'http://contactlist.us-east-1.elasticbeanstalk.com/contact/' + $('#editContactId').val(),

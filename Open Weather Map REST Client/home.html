@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container my-5">
+        <h1 class="text-center">Weather Page</h1>
+        <hr class="my-3">
+        <ul class="list-group" id="errorMessages">
+
+        </ul>
+        <form class="form-horizontal mt-3 needs-validation" action="" id="addForm">
+            <div class="row">
+                <div class="form-group col-md-6 d-flex flex-row align-items-center">
+                    <label for="addZipCode" class="control-label me-3">Zipcode</label>
+                    <input type="text" class="form-control" id="addZipCode" name="addZipCode" placeholder="Enter Zipcode" required>
+                </div>
+                <div class="form-group col-md-6 d-flex flex-row align-items-center my-3">
+                    <label for="addZipCode" class="control-label me-3">Unit</label>
+                    <select class="form-select" aria-label="Units" id="addUnit" required>
+                        <option selected value="imperial">Imperial</option>
+                        <option value="metric">Metric</option>
+                    </select>
+                    <button type="submit" class="ms-3 btn btn-outline-primary text-nowrap" id="getWeather">Get Weather</button>
+                </div>
+            </div>
+        </form>
+
+
+        <div id="conditionDiv">
+
+        </div>
+        <div id="fiveDayContainer">
+            <h2 class="my-5">Five Day Forecast </h2>
+            <div class="row offset-md-1" id="fiveDayDiv">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+    <script src="js/home.js"></script>
+</body></html>
