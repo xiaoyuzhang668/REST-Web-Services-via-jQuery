@@ -29,7 +29,6 @@ $(document).ready(function () {
                 row += '</div></div>';
 
                 conditionDiv.append(row);
-                console.log(data.message);
             },
 
             error: function () {
@@ -39,7 +38,7 @@ $(document).ready(function () {
                         .attr({
                             class: 'list-group-item list-group-item-danger'
                         })
-                        .text('Error calliing web service open weather to retrieve current weather. Please try again later.'));
+                        .text('Error calling web service open weather to retrieve current weather. Please try again later.'));
             }
         })
     }
@@ -86,7 +85,7 @@ $(document).ready(function () {
                         .attr({
                             class: 'list-group-item list-group-item-danger'
                         })
-                        .text('Error calliing web service open weather to retrieve 5 day forecast. Please try again later.'));
+                        .text('Error calling web service open weather to retrieve 5 day forecast. Please try again later.'));
             }
         })
     }
