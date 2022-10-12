@@ -1,9 +1,6 @@
 $(document).ready(function () {
     //    $('#mainInfoDiv').hide();
     $('#akronInfoDiv').hide();
-    $('#minneapolisInfoDiv').hide();
-    $('#louisvilleInfoDiv').hide();
-
 
     $('#louisvilleButton').on('click', function () {
         $('#louisvilleInfoDiv').show();
@@ -12,43 +9,10 @@ $(document).ready(function () {
         $('#minneapolisInfoDiv').hide();
     });
     // just another example with styles
-    $('#akronButton').on('click', function () {
-        $('#akronInfoDiv').show();
-        $('#mainInfoDiv').hide();
-        $('#louisvilleInfoDiv').hide();
-        $('#minneapolisInfoDiv').hide();
-    });
-    $('#mainButton').on('click', function () {
-        $('#mainInfoDiv').show();
-        $('#akronInfoDiv').hide();
-        $('#louisvilleInfoDiv').hide();
-        $('#minneapolisInfoDiv').hide();
-    });
-
-    $('#minneapolisButton').on('click', function () {
-        $('#minneapolisInfoDiv').show();
-        $('#akronInfoDiv').hide();
-        $('#louisvilleInfoDiv').hide();
-        $('#mainInfoDiv').hide();
-    });
-
-
-
-
-    $('#akronWeather').hide();
-    $('#louisvilleWeather').hide();
-    $('#minneapolisWeather').hide();
 
     $('#minneapolisInfoDiv').on('click', function () {
         $('#minneapolisWeather').toggle('slow');
     });
-    $('#akronWeatherButton').on('click', function () {
-        $('#akronWeather').toggle('slow');
-    });
-    $('#louisvilleInfoDiv').on('click', function () {
-        $('#louisvilleWeather').toggle('slow');
-    });
-
 
     $("tr").hover(
         // in callback
@@ -62,6 +26,36 @@ $(document).ready(function () {
             $(this).css("background-color", "");
         }
     );
-
-
 });
+
+$(document).ready(function () {
+
+    // wire up the toggleNumbers button
+    $('#toggleNumbers').on('click', function () {
+        $('h2').toggle('slow');
+    });
+
+    // show that you can do more than one thing at a time in an event
+    // handler
+    $('#centerUp').on('click', function () {
+        $('h1').addClass('text-center');
+        $('h2').addClass('text-center');
+        $('#buttonDiv').addClass('text-center');
+    });
+
+    // just another example with styles
+    $('#headingsBlue').on('click', function () {
+        $('h1').css('color', 'blue');
+    });
+
+    $('div').hover(
+        // in callback
+        function () {
+            $(this).css('background-color', 'CornflowerBlue');
+        },
+        // out callback
+        function () {
+            $(this).css('background-color', '');
+        });
+
+})
